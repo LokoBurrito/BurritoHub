@@ -1,15 +1,15 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService") 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local bindableEvent = Instance.new("BindableEvent")
 
--- Function to create a highlight for a player
 local function createPlayerHighlight(player)
-    -- Check if the highlight already exists for this player
+    
     if player:FindFirstChild("HighlightBillboardGui") then return end
 
     local playerHead = player.Character.Head 
 
-    -- Create BillboardGui to hold the highlight
     local highlightBillboardGui = Instance.new("BillboardGui")
     highlightBillboardGui.Name = "HighlightBillboardGui"
     highlightBillboardGui.Size = UDim2.new(1.5, 0, 1.5, 0) -- Adjust size as needed
@@ -17,14 +17,12 @@ local function createPlayerHighlight(player)
     highlightBillboardGui.Adornee = playerHead
     highlightBillboardGui.Parent = playerHead
 
-    -- Create Frame for the highlight background
     local highlightFrame = Instance.new("Frame")
     highlightFrame.Size = UDim2.new(1, 0, 1, 0)
     highlightFrame.BackgroundTransparency = 0.5 -- Semi-transparent
     highlightFrame.BackgroundColor3 = Color3.new(0.5, 0, 1) -- Purple
     highlightFrame.Parent = highlightBillboardGui
 
-    -- Create TextLabel to display the player's name
     local nameLabel = Instance.new("TextLabel")
     nameLabel.Size = UDim2.new(1, 0, 0.2, 0) -- Adjust as needed
     nameLabel.BackgroundTransparency = 1
@@ -33,7 +31,6 @@ local function createPlayerHighlight(player)
     nameLabel.Parent = highlightBillboardGui
 end
 
--- Function to remove a player's highlight
 local function removePlayerHighlight(player)
     local highlightBillboardGui = player.Character.Head:FindFirstChild("HighlightBillboardGui")
     if highlightBillboardGui then
@@ -41,14 +38,12 @@ local function removePlayerHighlight(player)
     end
 end
 
--- Function to create highlights for all players
 local function createOutlinesForAllPlayers()
     for _, player in ipairs(game.Players:GetPlayers()) do
         createPlayerHighlight(player)
     end
 end
 
--- Function to remove highlights for all players
 local function removeOutlinesForAllPlayers()
     for _, player in ipairs(game.Players:GetPlayers()) do
         removePlayerHighlight(player)
@@ -96,6 +91,72 @@ UserInputService.InputBegan:Connect(function(input)
     end
 end)
 
+local partSize = Vector3.new(1, 1, 1)  
+local hoverHeight = 3
+local hoverSpeed = 5
+
+local function createPetRock(player)
+    local part = Instance.new("Part")
+    part.Name = player.Name .. "'s pet rock"
+    part.Size = partSize
+    part.BrickColor = BrickColor.new("Medium stone grey") 
+    part.Anchored = true
+
+    local billboardGui = Instance.new("BillboardGui")
+    billboardGui.Adornee = part
+    billboardGui.Size = UDim2.new(2, 0, 2, 0)  
+    billboardGui.Parent = part
+
+    local character = player.Character
+    if character then
+        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+        if humanoidRootPart then
+            part.CFrame = humanoidRootPart.CFrame * CFrame.new(0, hoverHeight, 0)
+            part.Parent = workspace 
+        end
+    end
+
+    local angle = 0
+    RunService.Heartbeat:Connect(function(dt)
+        if part and character and character:FindFirstChild("HumanoidRootPart") then
+            angle = angle + dt * hoverSpeed
+            local offset = Vector3.new(math.sin(angle), hoverHeight, math.cos(angle))
+            part.CFrame = character.HumanoidRootPart.CFrame * CFrame.new(offset)
+        end
+    end)
+end
+
+local function destroyPetRock(player)
+    local petRockName = player.Name .. "'s pet rock"
+    local petRock = workspace:FindFirstChild(petRockName)
+    if petRock then
+        petRock:Destroy()
+    end
+end
+
+bindableEvent.Name = "TogglePetRock"
+bindableEvent.Parent = ReplicatedStorage
+
+bindableEvent.Event:Connect(function(player, state)
+    if state then
+        createPetRock(player)
+    else
+        destroyPetRock(player)
+    end
+end)
+
+Players.PlayerAdded:Connect(function(player)
+    player.Chatted:Connect(function(message)
+        if message:lower() == "/petrock" then 
+            if workspace:FindFirstChild(player.Name .. "'s pet rock") then
+                destroyPetRock(player) -- Destroy if already exists
+            else
+                createPetRock(player) 
+            end
+        end
+    end)
+end)
+
 -------------------------------------------------------------------------------
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local Window = Library.CreateLib("scripts (TESTING)", "DarkTheme")
@@ -122,5 +183,14 @@ a:NewToggle("Teleport to Nearest", "Toggle teleportation on/off", function(state
     else
         teleportEnabled = false
         print("teleport has been turned off")
+    end
+end)
+
+a:NewToggle("rock", "makes a rock hover around you", function(state)
+    local player = game.Players.LocalPlayer -- Get the local player
+    if state then
+        createPetRock(player)  -- Toggle pet rock on
+    else
+        destroyPetRock(player) -- Toggle pet rock off
     end
 end)
