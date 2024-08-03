@@ -2,28 +2,38 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService") 
 
+-- Function to create a highlight for a player
 local function createPlayerHighlight(player)
+    -- Check if the highlight already exists for this player
     if player:FindFirstChild("HighlightBillboardGui") then return end
+
     local playerHead = player.Character.Head 
+
+    -- Create BillboardGui to hold the highlight
     local highlightBillboardGui = Instance.new("BillboardGui")
     highlightBillboardGui.Name = "HighlightBillboardGui"
-    highlightBillboardGui.Size = UDim2.new(1.5, 0, 1.5, 0)
+    highlightBillboardGui.Size = UDim2.new(1.5, 0, 1.5, 0) -- Adjust size as needed
     highlightBillboardGui.AlwaysOnTop = true
     highlightBillboardGui.Adornee = playerHead
     highlightBillboardGui.Parent = playerHead
+
+    -- Create Frame for the highlight background
     local highlightFrame = Instance.new("Frame")
     highlightFrame.Size = UDim2.new(1, 0, 1, 0)
     highlightFrame.BackgroundTransparency = 0.5 -- Semi-transparent
     highlightFrame.BackgroundColor3 = Color3.new(0.5, 0, 1) -- Purple
     highlightFrame.Parent = highlightBillboardGui
+
+    -- Create TextLabel to display the player's name
     local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, 0, 0.2, 0)
+    nameLabel.Size = UDim2.new(1, 0, 0.2, 0) -- Adjust as needed
     nameLabel.BackgroundTransparency = 1
-    nameLabel.TextColor3 = Color3.new(1, 1, 1)
+    nameLabel.TextColor3 = Color3.new(1, 1, 1) -- White
     nameLabel.Text = player.Name
     nameLabel.Parent = highlightBillboardGui
 end
 
+-- Function to remove a player's highlight
 local function removePlayerHighlight(player)
     local highlightBillboardGui = player.Character.Head:FindFirstChild("HighlightBillboardGui")
     if highlightBillboardGui then
@@ -31,23 +41,20 @@ local function removePlayerHighlight(player)
     end
 end
 
+-- Function to create highlights for all players
 local function createOutlinesForAllPlayers()
     for _, player in ipairs(game.Players:GetPlayers()) do
         createPlayerHighlight(player)
     end
 end
 
+-- Function to remove highlights for all players
 local function removeOutlinesForAllPlayers()
     for _, player in ipairs(game.Players:GetPlayers()) do
         removePlayerHighlight(player)
     end
 end
 
-UserInputService.InputBegan:Connect(function(input)
-    if input.KeyCode == Enum.KeyCode.R then
-        refreshHighlights() 
-    end
-end)
 
 local function findNearestPlayer()
     local localPlayer = game.Players.LocalPlayer
@@ -88,7 +95,8 @@ UserInputService.InputBegan:Connect(function(input)
         teleportToNearest()
     end
 end)
-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 local Window = Library.CreateLib("scripts (TESTING)", "DarkTheme")
 local Tab = Window:NewTab("Visualizers")
