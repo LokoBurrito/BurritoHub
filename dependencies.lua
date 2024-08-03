@@ -88,3 +88,31 @@ UserInputService.InputBegan:Connect(function(input)
         teleportToNearest()
     end
 end)
+------------------------------------------------------------------------------
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("scripts (TESTING)", "DarkTheme")
+local Tab = Window:NewTab("Visualizers")
+local Section = Tab:NewSection("Toggles")
+------------------------------------------------------------------------------
+Section:NewToggle("Highlights", "Toggle to turn Highlights on/off", function(state)
+    if state then
+        createOutlinesForAllPlayers() 
+        print("Creating Headboxes")
+    else
+        removeOutlinesForAllPlayers()
+        print("Removing Headboxes")
+    end
+end)
+------------------------------------------------------------------------------
+local Tab = Window:NewTab("Extra Functions")
+local a = Tab:NewSection("Toggles")
+
+a:NewToggle("Teleport to Nearest", "Toggle teleportation on/off", function(state)
+    if state then
+        teleportEnabled = true
+        print("teleport is on, press '9' to teleport.")
+    else
+        teleportEnabled = false
+        print("teleport has been turned off")
+    end
+end)
