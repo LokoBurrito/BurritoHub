@@ -172,6 +172,25 @@ Section:NewToggle("Highlights", "Toggle to turn Highlights on/off", function(sta
         print("Removing Headboxes")
     end
 end)
+-------------------------------------------------------------------------------
+local Tab = Window:NewTab("Speed/Fly")
+local b = Tab:NewSection("Toggles")
+
+b:NewToggle("Speed", "become sonic", function(state)
+    if state then
+        -- make it yes
+    else
+        -- make it no
+    end
+end)
+
+b:NewToggle("Fly", "superhero", function(state)
+    if state then
+        -- make it yes
+    else
+        -- make jt no
+    end
+end)
 ------------------------------------------------------------------------------
 local Tab = Window:NewTab("Extra Functions")
 local a = Tab:NewSection("Toggles")
@@ -189,8 +208,34 @@ end)
 a:NewToggle("rock", "makes a rock hover around you", function(state)
     local player = game.Players.LocalPlayer -- Get the local player
     if state then
-        createPetRock(player)  -- Toggle pet rock on
+        createPetRock(player)  --  pet rock on
     else
-        destroyPetRock(player) -- Toggle pet rock off
+        destroyPetRock(player) --  pet rock off
     end
 end)
+-------------------------------------------------------------------------------
+local Tab = Window:NewTab("Configs")
+local c = Tab:NewSection("Sliders")
+
+c:NewSlider("Walkspeed Slider", "change walkspeed", 500, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
+end)
+
+c:NewSlider("Fly Speed Slider", "chsnge your fly sleed", 500, 0, function(s)
+    -- fix fly speed
+end)
+
+local c = Tab:NewSection("Dropdowns")
+
+c:NewDropdown("Pet Rock Colors", "Change color of your pet rock", {"Option 1", "Option 2", "Option 3"}, function(currentOption)
+    print(currentOption)
+end)
+
+c:NewDropdown("HeadBox Inside Color", "Change the inside headbox color", {"Purple", "Red", "Green", "Blue"}, function(currentOption)
+    print(currentOption)
+end)
+
+c:NewDropdown("HeadBox Outline Color", "Change the outline color", {"Purple", "Red", "Green", "Blue"}, function(currentOption)
+    print(currentOption)
+end)
+
